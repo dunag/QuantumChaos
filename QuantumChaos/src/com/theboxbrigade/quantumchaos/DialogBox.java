@@ -8,11 +8,16 @@ import com.theboxbrigade.quantumchaos.general.Globals;
 
 public class DialogBox {
 	protected static final String ACTION_END_DIALOG = "END_DIALOG";
+	protected static final String ACTION_CAT_TELEPORT_IN = "CAT_TELEPORT_IN";
+	protected static final String ACTION_CAT_TELEPORT_OUT = "CAT_TELEPORT_OUT";
 	protected SpriteBatch spriteBatch = new SpriteBatch();
 	protected BitmapFont font = Assets.font;
 	protected boolean visible;
 	protected boolean useGeneratedPortrait = true;
 	protected boolean dialogEnded = false;
+	protected boolean catTeleportIn = false;
+	protected boolean catTeleportOut = false;
+	protected boolean schrodingerChangeFacing = false;
 	protected float offX, offY;
 	
 	protected Sprite bg = Assets.dialogBoxBG;
@@ -102,6 +107,10 @@ public class DialogBox {
 				if (action.trim().equals(ACTION_END_DIALOG)) {
 					bg = Assets.dialogRobert;
 					dialogEnded = true;
+				} else if (action.trim().equalsIgnoreCase(ACTION_CAT_TELEPORT_IN)) {
+					catTeleportIn = true;
+				} else if (action.trim().equalsIgnoreCase(ACTION_CAT_TELEPORT_OUT)) {
+					catTeleportOut = true;
 				}
 				text = "";
 			}
@@ -131,6 +140,21 @@ public class DialogBox {
 	public boolean isDialogEnded() {
 		return dialogEnded;
 	}
+	
+	public boolean isCatTeleportIn() {
+		return catTeleportIn;
+	}
+	public void setCatTeleportIn(boolean catTeleportIn) {
+		this.catTeleportIn = catTeleportIn;
+	}
+	
+	public boolean isCatTeleportOut() {
+		return catTeleportOut;
+	}
+	public void setCatTeleportOut(boolean catTeleportOut) {
+		this.catTeleportOut = catTeleportOut;
+	}
+
 	
 	public SpriteBatch getSpriteBatch() {
 		return spriteBatch;

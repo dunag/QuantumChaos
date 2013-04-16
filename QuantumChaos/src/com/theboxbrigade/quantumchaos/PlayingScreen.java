@@ -43,6 +43,8 @@ public class PlayingScreen extends Screen {
 										break;
 			case Globals.MAIN_MENU:		setScreen(new MainMenuScreen());
 										break;
+			case Globals.CREDITS:		setScreen(new CreditsScreen());
+										break;
 		}
 		spriteBatch = world.getSpriteBatch();
 	}

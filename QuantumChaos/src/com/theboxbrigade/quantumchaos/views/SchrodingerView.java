@@ -11,16 +11,15 @@ public class SchrodingerView extends CharacterView {
 	
 	@Override
 	public void update(int state) {
-		if (state == 1) { // EAST
+		if (state == Globals.EAST) {
 			schrodinger = Assets.schrodingerE;
-		} else if (state == 2) { // SOUTH
+		} else if (state == Globals.SOUTH) {
 			schrodinger = Assets.schrodingerS;
 		}
 		draw(schrodinger, Globals.GAME_WIDTH/4, Globals.GAME_HEIGHT/2);
 	}
 	
 	public void update(float x, float y, int facingDir) {
-		
 		if (facingDir == Globals.EAST) {
 			if (!Globals.K)
 				schrodinger = Assets.schrodingerE;

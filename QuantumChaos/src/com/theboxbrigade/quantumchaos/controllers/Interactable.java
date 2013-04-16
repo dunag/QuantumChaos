@@ -11,6 +11,7 @@ public interface Interactable {
 	public static final int STALAGMITE = 7;
 	public static final int N2_CHUNK = 8;
 	public static final int FORCE_CHUNK = 9;
+	public static final int CAT = 10;
 	
 	public void whenInteractedWith();
 	

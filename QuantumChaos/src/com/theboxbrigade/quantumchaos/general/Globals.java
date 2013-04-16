@@ -31,6 +31,7 @@ public class Globals {
 	public static final int NEWTON2 = 105;
 	public static final int NEWTON3 = 106;
 	public static final int NEWTON4 = 107;
+	public static final int CREDITS = 108;
 	
 	// Game states:
 	public static final int STATE_GALILEO_BEATEN = 10;
@@ -43,4 +44,5 @@ public class Globals {
 	// Worlds beaten?
 	public static boolean Galileo = false;
 	public static boolean Newton = false; 
+	public static boolean GameOver = false;
 }

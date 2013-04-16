@@ -12,6 +12,7 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.IsometricTiledMapRenderer;
 import com.badlogic.gdx.utils.Array;
 import com.theboxbrigade.quantumchaos.controllers.BoxController;
+import com.theboxbrigade.quantumchaos.controllers.CatController;
 import com.theboxbrigade.quantumchaos.controllers.Interactable;
 import com.theboxbrigade.quantumchaos.controllers.ObjectController;
 import com.theboxbrigade.quantumchaos.controllers.PlayerController;
@@ -38,6 +39,7 @@ public class TheHub extends World {
 	protected Array<ObjectController> objects;
 	protected PlayerController robert;
 	protected SchrodingerController schrodinger;
+	protected CatController cat;
 	protected BoxController redBox, greenBox;
 	
 	protected PauseMenu pauseMenu = new PauseMenu();
@@ -172,9 +174,14 @@ public class TheHub extends World {
 			} else if (input.buttons[Input.INTERACT] && !input.oldButtons[Input.INTERACT]) {
 				Interactable tmp = (Interactable)robert.getTileInFrontOfPlayer().getObstructing();
 				if (tmp != null) {
-					robert.setInteractable(tmp);
-					robert.processInput(Input.INTERACT);
-					tmp = null;
+					if (tmp.interactableType() == Interactable.SCHRODINGER && Globals.GameOver) {
+						nextWorld = Globals.CREDITS;
+						readyToLeave = true;
+					} else {
+						robert.setInteractable(tmp);
+						robert.processInput(Input.INTERACT);
+						tmp = null;
+					}
 				}
 				input.releaseAllKeys();
 			} else if ((input.buttons[Input.DPAD_DOWN] && !input.oldButtons[Input.DPAD_DOWN])
@@ -184,7 +191,7 @@ public class TheHub extends World {
 				}
 				input.releaseAllKeys();
 			} else if (input.buttons[Input.AFFIRM] && !input.oldButtons[Input.AFFIRM]) {
-				if (showDialog) {
+				if (showDialog && schrodinger.state != SchrodingerController.TALKING) {
 					int choice = ((YesNoDialogBox)dialogBox).processInput(Input.AFFIRM);
 					if (choice == YesNoDialogBox.YES_SELECTED) {
 						readyToLeave = true;
@@ -205,6 +212,21 @@ public class TheHub extends World {
 			// When Galileo's World is beaten, unlock Newton's World
 			if (Globals.Galileo) {
 				redBox.setLocked(false);
+			}
+			// Make cat teleport in and out
+			if (dialogBox.isCatTeleportIn()) {
+				cat.processInput(CatController.TELEPORT_IN);
+				dialogBox.setCatTeleportIn(false);
+				
+			} else if (dialogBox.isCatTeleportOut()) {
+				cat.processInput(CatController.TELEPORT_OUT);
+				dialogBox.setCatTeleportOut(false);
+			}
+			// Game Over
+			if (dialogBox.isDialogEnded() && Globals.Newton) {
+				Globals.GameOver = true;
+				schrodinger.setState(SchrodingerController.IDLE);
+				//robert.setState(PlayerController.IDLE);
 			}
 		}
 	}
@@ -322,6 +344,13 @@ public class TheHub extends World {
 		greenBox.setPosition(tileManager.getTile(10, 5));
 		greenBox.setScreenPosition(Globals.TILE_WIDTH*6.75f, Globals.TILE_HEIGHT*13.5f);
 		greenBox.setLocked(true);
+		
+		// Create the Cat object
+		cat = new CatController(tileManager);
+		cat.setPosition(tileManager.getTile(11,7));
+		cat.setScreenPosition(Globals.GAME_WIDTH / 2.0f + Globals.TILE_WIDTH * 3.0f, Globals.GAME_HEIGHT / 2.0f + Globals.TILE_HEIGHT * 5.0f);
+		cat.setVisible(false);
+		objects.add(cat);
 	}
 
 	protected void processPauseInput() {

@@ -3,9 +3,11 @@ package com.theboxbrigade.quantumchaos.general;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.theboxbrigade.quantumchaos.controllers.CatController;
 import com.theboxbrigade.quantumchaos.controllers.PlayerController;
 
 public class AnimatedAssets {
+	// ROBERT
 	private static final int FRAME_WIDTH = 64;
 	private static final int FRAME_HEIGHT = 128;
 	private static final int PICKUP_Y_OFF = 512;
@@ -18,8 +20,15 @@ public class AnimatedAssets {
 	private static Sprite[] carryNorthFrames, carryEastFrames, carrySouthFrames, carryWestFrames;
 	public static int robertCurrentFrameNum = -1;
 	public static Sprite robertCurrentFrame;
+	
+	// CAT
+	public static int numTeleportingFrames = 8;
+	private static final String catPath = "data/images/cat_anim.png";
+	private static Sprite[] catTeleportFrames;
+	public static Sprite catCurrentFrame;
 
 	public static void load() {
+		// ROBERT
 		robertWalkNorthFrames = new Sprite[numWalkingFrames];
 		robertWalkWestFrames = new Sprite[numWalkingFrames];
 		robertWalkEastFrames = new Sprite[numWalkingFrames];
@@ -50,17 +59,13 @@ public class AnimatedAssets {
 		}
 		robertCurrentFrameNum = 0;
 		robertCurrentFrame = robertWalkNorthFrames[robertCurrentFrameNum];
-	}
-	
-	public static void setState(int state) {
-		setCurrentFrame(state);
-	}
-	
-	public static void advanceCurrentFrame(int state) {
-		if (++robertCurrentFrameNum >= numWalkingFrames) {
-			robertCurrentFrameNum = 0;
+		
+		// CAT
+		catTeleportFrames = new Sprite[numTeleportingFrames];
+		catTeleportFrames[0] = load(catPath, 0, 0, 114, 138, false);
+		for (int i=1; i<numTeleportingFrames; i++) {
+			catTeleportFrames[i] = load(catPath, i*130, 0, 130, 138, false);
 		}
-		setCurrentFrame(state);
 	}
 	
 	public static Sprite getFrame(int state, int frame) {
@@ -115,17 +120,15 @@ public class AnimatedAssets {
 		return robertCurrentFrame;
 	}
 	
-	private static void setCurrentFrame(int state) {
-		switch (state) {
-			case Globals.NORTH: 	robertCurrentFrame = robertWalkNorthFrames[robertCurrentFrameNum];
-									break;
-			case Globals.EAST: 		robertCurrentFrame = robertWalkEastFrames[robertCurrentFrameNum];
-									break;
-			case Globals.SOUTH: 	robertCurrentFrame = robertWalkSouthFrames[robertCurrentFrameNum];
-									break;
-			case Globals.WEST: 		robertCurrentFrame = robertWalkWestFrames[robertCurrentFrameNum];
-									break;
+	public static Sprite getCatFrame(int state, int facing, int frame) {
+		if (state == CatController.TELEPORT_IN) {
+			frame %= numTeleportingFrames;
+			return catTeleportFrames[frame];
+		} else if (state == CatController.TELEPORT_OUT) {
+			frame %= numTeleportingFrames;
+			return catTeleportFrames[frame];
 		}
+		return catCurrentFrame;
 	}
 	
 	public static Sprite load(String name, int x, int y, int width, int height, boolean flipY) {

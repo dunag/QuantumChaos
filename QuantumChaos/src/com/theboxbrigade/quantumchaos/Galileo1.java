@@ -18,6 +18,7 @@ import com.theboxbrigade.quantumchaos.controllers.KeyController;
 import com.theboxbrigade.quantumchaos.controllers.ObjectController;
 import com.theboxbrigade.quantumchaos.controllers.PlanetController;
 import com.theboxbrigade.quantumchaos.controllers.PlayerController;
+import com.theboxbrigade.quantumchaos.controllers.SchrodingerController;
 import com.theboxbrigade.quantumchaos.general.Assets;
 import com.theboxbrigade.quantumchaos.general.DialogManager;
 import com.theboxbrigade.quantumchaos.general.Globals;
@@ -43,7 +44,7 @@ public class Galileo1 extends World {
 	protected boolean puzzleComplete = false;
 	protected KeyController key;
 	protected DoorController door;
-	//protected JournalPageController journalPage;
+	protected JournalPageController journalPage;
 	
 	protected PauseMenu pauseMenu = new PauseMenu();
 	protected boolean showDialog;
@@ -135,12 +136,10 @@ public class Galileo1 extends World {
 		}
 		
 		// Journal Page
-		/*
 		spriteBatch = journalPage.getViewSpriteBatch();
 		spriteBatch.begin();
 			journalPage.update(delta);
 		spriteBatch.end();
-		*/
 		
 		// Pause Menu
 		spriteBatch = pauseMenu.getSpriteBatch();
@@ -196,6 +195,7 @@ public class Galileo1 extends World {
 			checkCarryingPlanet();
 			drawPlanetOverPlayer();
 			if (!puzzleComplete) checkPuzzleComplete();
+			closeInactiveJournalPage();
 			checkDoorUnlockable();
 			checkReadyToLeave();
 		}
@@ -327,13 +327,11 @@ public class Galileo1 extends World {
 		objects.add(key);
 		
 		// Journal Page
-		/*
-		journalPage = new JournalPageController(tileManager, "Too long have I been shun for my theories. Too long has my thinking been punished and my mind constricted.  Heliocentricity... It is a fact, I know it is... but... I can't seem to remember... everything is out of order... The world has gone awry. It must be fixed...");
+		journalPage = new JournalPageController(tileManager, "Too long have I been shunned for my theories. Too long has my thinking been punished and my mind constricted.  Heliocentricity... It is a fact, I know it is... but... I can't seem to remember... everything is out of order... The world has gone awry. It must be fixed...\n\n- Galileo Galilei");
 		journalPage.setPosition(tileManager.getTile(11,6));
 		journalPage.setScreenPosition(Globals.GAME_WIDTH / 2.0f + Globals.TILE_WIDTH * 2.75f, Globals.GAME_HEIGHT / 2.0f + Globals.TILE_HEIGHT * 6.5f);
 		journalPage.setObstructing(false);
 		objects.add(journalPage);
-		*/
 	}
 	
 	/**
@@ -348,16 +346,14 @@ public class Galileo1 extends World {
 				break;
 			}
 		}
-		//if (true) {
-		if (puzzleComplete) {
+		if (true) {
+		//if (puzzleComplete) {
 			key.setObstructing(true);
 			key.setVisible(true);
 			key.setInteractable(true);
-			/*
 			journalPage.setObstructing(true);
 			journalPage.setVisible(true);
 			journalPage.setInteractable(true);
-			*/
 			Assets.planetPuzzleComplete.play();
 		}
 	}
@@ -475,6 +471,13 @@ public class Galileo1 extends World {
 			case PauseMenu.MAIN_MENU:		readyToLeave = true;
 											nextWorld = Globals.MAIN_MENU;
 											break;
+		}
+	}
+	
+	protected void closeInactiveJournalPage() {
+		if ((robert.state != PlayerController.INTERACTING && robert.state != PlayerController.IDLE) && journalPage.state == JournalPageController.PICKED_UP) {
+			journalPage.setVisible(false);
+			journalPage.setInteractable(false);
 		}
 	}
 	

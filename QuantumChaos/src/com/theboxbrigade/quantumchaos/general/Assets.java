@@ -130,7 +130,7 @@ public class Assets {
 									planetDrop = loadSound("data/sounds/drop.mp3");
 									correctPlanetPlacement = loadSound("data/sounds/Correct placement.mp3");
 									incorrectPlanetPlacement = loadSound("data/sounds/Wrong placement sound.mp3");
-									planetPuzzleComplete = loadSound("data/sounds/Puzzle Complete.mp3");
+									//planetPuzzleComplete = loadSound("data/sounds/Puzzle Complete.mp3");
 									break;
 			case Globals.NEWTON1:	stalagmite = load("data/images/stalagmite.png", 0, 0, 128, 128, false);
 									newtonMusic = loadMusic("data/sounds/newton world theme.mp3");

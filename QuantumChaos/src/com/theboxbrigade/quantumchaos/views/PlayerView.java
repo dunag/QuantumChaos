@@ -17,7 +17,6 @@ public class PlayerView extends CharacterView {
 	
 	@Override
 	public void update(int state) {
-		AnimatedAssets.setState(state);
 		player = AnimatedAssets.robertCurrentFrame;
 		draw(player, Globals.GAME_WIDTH/2, Globals.GAME_HEIGHT/2);
 	}

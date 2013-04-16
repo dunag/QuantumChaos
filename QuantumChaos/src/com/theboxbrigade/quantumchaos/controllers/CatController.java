@@ -1,37 +1,36 @@
 package com.theboxbrigade.quantumchaos.controllers;
 
-import com.theboxbrigade.quantumchaos.DialogBox;
 import com.theboxbrigade.quantumchaos.Obstructing;
 import com.theboxbrigade.quantumchaos.Position;
 import com.theboxbrigade.quantumchaos.Tile;
 import com.theboxbrigade.quantumchaos.TileManager;
-import com.theboxbrigade.quantumchaos.general.Assets;
+import com.theboxbrigade.quantumchaos.general.AnimatedAssets;
 import com.theboxbrigade.quantumchaos.general.Globals;
-import com.theboxbrigade.quantumchaos.models.SchrodingerModel;
-import com.theboxbrigade.quantumchaos.views.SchrodingerView;
+import com.theboxbrigade.quantumchaos.models.CatModel;
+import com.theboxbrigade.quantumchaos.views.CatView;
 
-public class SchrodingerController extends ObjectController implements Interactable, Obstructing {
+public class CatController extends ObjectController implements Interactable, Obstructing {
 	public static final int IDLE = 0;
-	public static final int INIT_TALKING = 1;
-	public static final int TALKING = 2;
-	public static final int WALKING = 3;
-	public static final int CHANGE_FACING = 0;
+	public static final int TELEPORT_IN = 1;
+	public static final int TELEPORT_OUT = 2;
+	
 	private Position position;
 	protected int facingDir = Globals.SOUTH;
 	protected float x;
 	protected float y;
-	public int state;
+	public int state = IDLE;
+	protected int deltaState = 0;
+	protected int stateFrame = 0;
 	protected boolean moving;
-	protected String dialogText;
-	protected boolean talking;
+	protected boolean visible = true;
 	private TileManager tileManager;
 	
-	public SchrodingerController(TileManager tileManager) {
+	public CatController(TileManager tileManager) {
 		this.tileManager = tileManager;
 		position = new Position(this.tileManager);
 		
-		model = new SchrodingerModel(this);
-		view = new SchrodingerView();
+		model = new CatModel(this);
+		view = new CatView();
 	}
 	
 	public void setPosition(Tile tile) {
@@ -58,6 +57,16 @@ public class SchrodingerController extends ObjectController implements Interacta
 		this.state = state;
 	}
 	
+	public void setVisible(boolean visible) {
+		this.visible = visible;
+	}
+	
+	public boolean isVisible() { 
+		return visible;
+	}
+	
+	public void resetState() { stateFrame = 0; }
+	
 	public void setScreenPosition(float x, float y) {
 		this.x = x;
 		this.y = y;
@@ -72,35 +81,39 @@ public class SchrodingerController extends ObjectController implements Interacta
 	@Override
 	public void processInput(int input) {
 		switch (input) {
-			case CHANGE_FACING: if (facingDir == Globals.SOUTH) ((SchrodingerModel)model).face(Globals.EAST);
-								else if (facingDir == Globals.EAST) ((SchrodingerModel)model).face(Globals.SOUTH);
+			case TELEPORT_IN: 	((CatModel)model).teleportIn();
+								break;
+			case TELEPORT_OUT:	((CatModel)model).teleportOut();
 								break;
 		}
 	}
 	
 	@Override
 	public void whenInteractedWith() {
-		((SchrodingerModel)model).talk();
-	}
-	
-	public boolean isMoving() { return moving; }
-	public void setMoving(boolean moving) { this.moving = moving; }
-	
-	public boolean isTalking() { return talking; }
-	public void setTalking(boolean talking) { this.talking = talking; }
-	public DialogBox getDialogBox() {
-		return new DialogBox(Assets.schrodingerE, null);
 	}
 	
 	@Override
 	public boolean update(float delta) {
+		if (++deltaState > 2 && state != IDLE) {
+			stateFrame++;
+			deltaState = 0;
+		}
+		if (state == TELEPORT_IN && stateFrame >= AnimatedAssets.numTeleportingFrames) {
+			state = IDLE;
+			setVisible(true);
+			resetState();
+		} else if (state == TELEPORT_OUT && stateFrame >= AnimatedAssets.numTeleportingFrames) {
+			state = IDLE;
+			setVisible(false);
+			resetState();
+		}
 		updateView();
 		return false;
 	}
 
 	@Override
 	protected void updateView() {
-		((SchrodingerView)view).update(x, y, facingDir);
+		if (visible) ((CatView)view).update(state, facingDir, stateFrame, x, y);
 	}
 
 	@Override
@@ -115,6 +128,6 @@ public class SchrodingerController extends ObjectController implements Interacta
 
 	@Override
 	public int interactableType() {
-		return Interactable.SCHRODINGER;
+		return Interactable.CAT;
 	}
 }
